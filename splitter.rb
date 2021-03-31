@@ -20,61 +20,21 @@ enum_splitted_docs =  $splitted_docs.to_enum
   #   #puts marcer.plain_isbn
   #   puts marcer.mrk_fields_with_index
   # end
-marcer = Marcer.new($splitted_docs[56])
-# puts marcer.mrk_fields_with_index
-# puts marcer.mrk_fields_with_index["=100"]
-enum_index = marcer.mrk_fields_with_index.to_enum
+marcer = Marcer.new($splitted_docs[110])
+puts marcer.find_mrk_field("=240").founded_mrk_field
+puts marcer.find_mrk_field("=245").find_sub_field["$a"]
 
-# node = m.mrk_fields_with_index["=100"]
-# head = m.mrk_fields_with_index
-def find_mrk_field(field)
-  marcer = Marcer.new($splitted_docs[11])
-  if marcer.mrk_fields_to_a.include? field
-    head_index_in_array = marcer.mrk_fields_to_a.index(field)
-    #puts "head_index_in_array: #{head_index_in_array}"
-    tail = marcer.mrk_fields_to_a[head_index_in_array+1]
-    tail_mrk_index = marcer.mrk_fields_with_index[tail]
-    head_mrk_index = marcer.mrk_fields_with_index[field]
-    #puts "head_mrk_index : #{head_mrk_index} - tail_mrk_index:  #{tail_mrk_index}"
-    field_length = tail_mrk_index - head_mrk_index
-    marcer.mrk_file[head_mrk_index, field_length]
-
-    #
-    # if not found return "" -> String
-  else
-    raise MarcFieldDoNotExist
-  end
-end
-
-#Usage
-#   @param 1 = String
-#   find_sub_field("$a") -> "some string"
-#
-#
-def find_sub_field(sub_field)
-  puts sub_field.size
-  hash_list = Hash.new
-  result_hash = Hash.new
-  indexes = sub_field.scan /\$[a-z]/
-  indexes.each do |i|
-    #puts "i is : #{i}"
-    hash_list[i] = sub_field.index(i)
-
-  end
-  puts hash_list
-  hash_list.each_with_index do |(k, v), i|
-
-    x = hash_list[hash_list.keys[i+1]] || sub_field.size
-    puts "K: is #{k} V is : #{v} i is : #{i}  x is : #{x}"
-
-    result_hash[k] = sub_field.slice(v+2,x-v-2)
-
-  end
-  result_hash
-end
-puts find_mrk_field "=245"
-#puts find_mrk_field("=490").gsub /\$[a-z]/, ""
-#puts find_mrk_field("=490").scan /\$[a-z]/
-puts find_sub_field(find_mrk_field "=245")
-
-
+_776 = <<-TEMP
+=776  0\$iPrint version:$a#{marcer.find_mrk_field("=100").find_sub_field["$a"]}
+$s#{marcer.find_mrk_field("=240").find_sub_field["$a"]}
+$t#{marcer.find_mrk_field("=245").find_sub_field["$a"]}
+$d#{marcer.find_mrk_field("=264").find_sub_field["$a"]}
+#{marcer.find_mrk_field("=264").find_sub_field["$b"]}
+#{marcer.find_mrk_field("=264").find_sub_field["$c"]}
+$h#{marcer.find_mrk_field("=300").find_sub_field["$a"]},
+#{marcer.find_mrk_field("=300").find_sub_field["$c"]}
+$k#{marcer.find_mrk_field("=490").find_sub_field["$a"]}
+#{marcer.find_mrk_field("=490").find_sub_field["$v"]}
+$z#{marcer.find_mrk_field("=020").find_sub_field["$a"]}
+TEMP
+puts _776.gsub(/\n/, "")
